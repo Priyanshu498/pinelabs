@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -19,20 +20,32 @@ pipeline {
                 junit 'reports/junit.xml'
             }
         }
+
     }
 
     post {
         always {
             script {
-                def status = (currentBuild.result == 'UNSTABLE') ? "FAILURE" : "SUCCESS"
 
-                githubNotify credentialsId: 'priyanshu',
-                             repo: 'pinelabs',
-                             account: 'Priyanshu498',
-                             context: 'ci/jenkins',
-                             status: status,
-                             description: 'Jenkins CI result',
-                             sha: env.GIT_COMMIT
+                // Determine build status
+                def status = "SUCCESS"
+                def description = "All tests passed"
+
+                if (currentBuild.result == "UNSTABLE") {
+                    status = "FAILURE"
+                    description = "Some tests failed"
+                }
+
+                // Notify GitHub
+                githubNotify(
+                    credentialsId: 'github-token-priyanshu',
+                    repo: 'pinelabs',
+                    account: 'Priyanshu498',
+                    context: 'ci/jenkins',
+                    status: status,
+                    description: description,
+                    sha: env.GIT_COMMIT
+                )
             }
         }
     }
