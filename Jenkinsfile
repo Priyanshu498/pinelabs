@@ -27,24 +27,22 @@ pipeline {
         always {
             script {
 
-                // Determine build status
                 def status = "SUCCESS"
                 def description = "All tests passed"
 
-                if (currentBuild.result == "UNSTABLE") {
+                if (currentBuild.currentResult == "UNSTABLE") {
                     status = "FAILURE"
                     description = "Some tests failed"
                 }
 
-                // Notify GitHub
                 githubNotify(
-                    credentialsId: 'github-token-priyanshu',
-                    repo: 'pinelabs',
+                    credentialsId: 'github-token-priyanshu',   // EXACT same ID
                     account: 'Priyanshu498',
+                    repo: 'pinelabs',
+                    sha: env.GIT_COMMIT,
                     context: 'ci/jenkins',
                     status: status,
-                    description: description,
-                    sha: env.GIT_COMMIT
+                    description: description
                 )
             }
         }
