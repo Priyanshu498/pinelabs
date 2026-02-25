@@ -26,7 +26,7 @@ pipeline {
             script {
                 def status = (currentBuild.result == 'UNSTABLE') ? "FAILURE" : "SUCCESS"
 
-                githubNotify credentialsId: 'github-token-priyanshu',
+                githubNotify credentialsId: 'priyanshu',
                              repo: 'pinelabs',
                              account: 'Priyanshu498',
                              context: 'ci/jenkins',
