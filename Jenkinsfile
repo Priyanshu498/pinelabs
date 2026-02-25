@@ -2,6 +2,12 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 echo "Running dummy tests..."
@@ -18,17 +24,15 @@ pipeline {
     post {
         always {
             script {
-                if (currentBuild.result == 'UNSTABLE') {
-                    githubNotify credentialsId: 'github-token-priyanshu',
-                                 context: 'ci/jenkins',
-                                 status: 'FAILURE',
-                                 description: 'Some tests failed'
-                } else {
-                    githubNotify credentialsId: 'github-token-priyanshu',
-                                 context: 'ci/jenkins',
-                                 status: 'SUCCESS',
-                                 description: 'All tests passed'
-                }
+                def status = (currentBuild.result == 'UNSTABLE') ? "FAILURE" : "SUCCESS"
+
+                githubNotify credentialsId: 'github-token-priyanshu',
+                             repo: 'pinelabs',
+                             account: 'Priyanshu498',
+                             context: 'ci/jenkins',
+                             status: status,
+                             description: 'Jenkins CI result',
+                             sha: env.GIT_COMMIT
             }
         }
     }
