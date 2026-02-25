@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="SampleTestSuite" tests="2" failures="1">
+  <testcase classname="LoginTest" name="testLogin"/>
+  <testcase classname="PaymentTest" name="testPayment">
+    <failure message="Payment failed"/>
+  </testcase>
+</testsuite>
