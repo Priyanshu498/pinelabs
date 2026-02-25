@@ -21,30 +21,34 @@ pipeline {
             }
         }
 
-    }
+        stage('Notify GitHub') {
+            steps {
+                withCredentials([string(credentialsId: 'github-token-priyanshu', variable: 'GITHUB_TOKEN')]) {
+                    script {
 
-    post {
-        always {
-            script {
+                        def status = "success"
+                        def description = "All tests passed"
 
-                def status = "SUCCESS"
-                def description = "All tests passed"
+                        if (currentBuild.currentResult == "UNSTABLE") {
+                            status = "failure"
+                            description = "Some tests failed"
+                        }
 
-                if (currentBuild.currentResult == "UNSTABLE") {
-                    status = "FAILURE"
-                    description = "Some tests failed"
+                        sh """
+                        curl -X POST \
+                        -H "Authorization: token ${GITHUB_TOKEN}" \
+                        -H "Accept: application/vnd.github.v3+json" \
+                        https://api.github.com/repos/Priyanshu498/pinelabs/statuses/${GIT_COMMIT} \
+                        -d '{
+                          "state": "${status}",
+                          "context": "ci/jenkins",
+                          "description": "${description}"
+                        }'
+                        """
+                    }
                 }
-
-                githubNotify(
-                    credentialsId: 'github-token-priyanshu',   // EXACT same ID
-                    account: 'Priyanshu498',
-                    repo: 'pinelabs',
-                    sha: env.GIT_COMMIT,
-                    context: 'ci/jenkins',
-                    status: status,
-                    description: description
-                )
             }
         }
+
     }
 }
