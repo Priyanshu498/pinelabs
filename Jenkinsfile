@@ -14,6 +14,9 @@ pipeline {
                 junit 'reports/junit.xml'
 
                 publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
                     reportDir: 'reports',
                     reportFiles: 'report.html',
                     reportName: 'CI Test Report'
@@ -46,5 +49,6 @@ pipeline {
                 }
             }
         }
+
     }
 }
